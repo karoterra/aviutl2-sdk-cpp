@@ -19,6 +19,12 @@ target_compile_options(aviutl2_sdk_cpp
         $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
 )
 
+target_compile_definitions(aviutl2_sdk_cpp
+    INTERFACE
+        UNICODE
+        _UNICODE
+)
+
 target_include_directories(aviutl2_sdk_cpp
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

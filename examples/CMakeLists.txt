@@ -1,1 +1,6 @@
+add_subdirectory(AviReader)
+add_subdirectory(AviSaver)
 add_subdirectory(MediaFilter)
+add_subdirectory(MediaObject)
+add_subdirectory(ScriptModule)
+add_subdirectory(WindowClient)

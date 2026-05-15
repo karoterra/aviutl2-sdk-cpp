@@ -1,13 +1,14 @@
 //----------------------------------------------------------------------------------
-// サンプルフィルタプラグイン(フィルタ効果) for AviUtl ExEdit2
+// サンプルフィルタプラグイン(メディアオブジェクト) for AviUtl ExEdit2
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-
-#include <Windows.h>
-
+#include <windows.h>
 #include <memory>
 #include <algorithm>
+#include <d3d11.h>
+#include <wrl/client.h>
+using Microsoft::WRL::ComPtr;
 
 #include <aviutl2_sdk_cpp/raw/filter.hpp>
 
@@ -17,21 +18,20 @@ bool func_proc_audio(aviutl2::raw::FILTER_PROC_AUDIO* audio);
 //---------------------------------------------------------------------
 // フィルタ設定項目定義
 //---------------------------------------------------------------------
-auto luminance = aviutl2::raw::FILTER_ITEM_TRACK(L"明るさ", 1.0, 0.0, 2.0, 0.01);
-aviutl2::raw::FILTER_ITEM_SELECT::ITEM component_list[] = { { L"R成分のみ", 1 }, { L"G成分のみ", 2 }, { L"B成分のみ", 4 }, { L"RGB成分", 7 }, { nullptr } };
-auto component = aviutl2::raw::FILTER_ITEM_SELECT(L"対象", 7, component_list);
-auto volume = aviutl2::raw::FILTER_ITEM_TRACK(L"音量", 1.0, 0.0, 2.0, 0.01);
-auto mono = aviutl2::raw::FILTER_ITEM_CHECK(L"モノラル化", false);
-void* items[] = { &luminance, &component, &volume, &mono, nullptr };
+auto width = aviutl2::raw::FILTER_ITEM_TRACK(L"横", 100, 1, 1000);
+auto height = aviutl2::raw::FILTER_ITEM_TRACK(L"縦", 100, 1, 1000);
+auto color = aviutl2::raw::FILTER_ITEM_COLOR(L"色", 0xffffff);
+auto frequency = aviutl2::raw::FILTER_ITEM_TRACK(L"周波数", 1000, 1, 24000);
+void* items[] = { &width, &height, &color, &frequency, nullptr };
 
 //---------------------------------------------------------------------
 // フィルタプラグイン構造体定義
 //---------------------------------------------------------------------
 aviutl2::raw::FILTER_PLUGIN_TABLE filter_plugin_table = {
-    aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_AUDIO, // フラグ
-    L"メディアフィルタ(sample)",                    // プラグインの名前
+    aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_AUDIO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_INPUT, // フラグ
+    L"MediaObject(sample)",                         // プラグインの名前
     L"サンプル",                                    // ラベルの初期値 (nullptrならデフォルトのラベルになります)
-    L"Sample MediaFilter version 2.00 By ＫＥＮくん",   // プラグインの情報
+    L"Sample MediaObject version 2.00 By ＫＥＮくん",   // プラグインの情報
     items,                                          // 設定項目の定義 (FILTER_ITEM_XXXポインタを列挙してnull終端したリストへのポインタ)
     func_proc_video,                                // 画像フィルタ処理関数へのポインタ (FLAG_VIDEOが有効の時のみ呼ばれます)
     func_proc_audio                                 // 音声フィルタ処理関数へのポインタ (FLAG_AUDIOが有効の時のみ呼ばれます)
@@ -61,26 +61,35 @@ EXTERN_C __declspec(dllexport) aviutl2::raw::FILTER_PLUGIN_TABLE* GetFilterPlugi
 // 画像フィルタ処理
 //---------------------------------------------------------------------
 bool func_proc_video(aviutl2::raw::FILTER_PROC_VIDEO* video) {
-    auto w = video->object->width;
-    auto h = video->object->height;
-    auto buffer = std::make_unique<aviutl2::raw::PIXEL_RGBA[]>(w * h);
-    video->get_image_data(buffer.get());
+    auto w = (int)width.value;
+    auto h = (int)height.value;
+    if (w <= 0 || h <= 0) return false;
 
-    // 指定のRGB成分の明るさを調整
-    auto r = (component.value & 1) ? luminance.value : 1.0;
-    auto g = (component.value & 2) ? luminance.value : 1.0;
-    auto b = (component.value & 4) ? luminance.value : 1.0;
-    auto p = buffer.get();
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            p->r = (unsigned char)std::clamp(p->r * r, 0.0, 255.0);
-            p->g = (unsigned char)std::clamp(p->g * g, 0.0, 255.0);
-            p->b = (unsigned char)std::clamp(p->b * b, 0.0, 255.0);
-            p++;
-        }
+    // 指定サイズの画像を設定してTexture2Dを取得
+    video->set_image_data(nullptr, w, h);
+    auto texture = video->get_image_texture2d();
+
+    // D3DのDevice,DeviceContextを取得
+    ComPtr<ID3D11Device> device;
+    texture->GetDevice(&device);
+    ComPtr<ID3D11DeviceContext> context;
+    device->GetImmediateContext(&context);
+
+    // Texture2DのRTVを取得
+    D3D11_TEXTURE2D_DESC desc{};
+    texture->GetDesc(&desc);
+    D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
+    rtvDesc.Format = desc.Format;
+    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    ComPtr<ID3D11RenderTargetView> rtv;
+    if (FAILED(device->CreateRenderTargetView(texture, &rtvDesc, &rtv))) {
+        return false;
     }
 
-    video->set_image_data(buffer.get(), w, h);
+    // 指定の色で塗りつぶす
+    auto col = color.value;
+    const float color[4] = { col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f }; // 乗算済みアルファ
+    context->ClearRenderTargetView(rtv.Get(), color);
     return true;
 }
 
@@ -88,33 +97,20 @@ bool func_proc_video(aviutl2::raw::FILTER_PROC_VIDEO* video) {
 // 音声フィルタ処理
 //---------------------------------------------------------------------
 bool func_proc_audio(aviutl2::raw::FILTER_PROC_AUDIO* audio) {
-    auto num = audio->object->sample_num;
-    auto buffer0 = std::make_unique<float[]>(num);
-    auto buffer1 = std::make_unique<float[]>(num);
-    audio->get_sample_data(buffer0.get(), 0);
-    audio->get_sample_data(buffer1.get(), 1);
+    auto sample_index = audio->object->sample_index;
+    auto sample_num = audio->object->sample_num;
+    auto channel_num = audio->object->channel_num;
 
-    // 音量を調整
-    auto v = (float)volume.value;
-    auto p0 = buffer0.get();
-    auto p1 = buffer1.get();
-    for (int i = 0; i < num; i++) {
-        *p0++ *= v;
-        *p1++ *= v;
+    // 指定周波数のサイン波の音声データを作成
+    auto step = (3.141592653589793 * 2.0) * frequency.value / audio->scene->sample_rate;
+    auto buffer = std::make_unique<float[]>(sample_num);
+    auto p = buffer.get();
+    for (int i = 0; i < sample_num; i++) {
+        *p++ = (float)sin(sample_index++ * step);
     }
 
-    // モノラル化
-    p0 = buffer0.get();
-    p1 = buffer1.get();
-    if (mono.value) {
-        for (int i = 0; i < num; i++) {
-            *p0++ += *p1++;
-        }
-        audio->set_sample_data(buffer0.get(), 0);
-        audio->set_sample_data(buffer0.get(), 1);
-    } else {
-        audio->set_sample_data(buffer0.get(), 0);
-        audio->set_sample_data(buffer1.get(), 1);
+    for (int i = 0; i < channel_num; i++) {
+        audio->set_sample_data(buffer.get(), i);
     }
     return true;
 }
