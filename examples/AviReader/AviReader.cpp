@@ -4,6 +4,7 @@
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
 #include <windows.h>
+
 #include <vfw.h>
 #pragma comment(lib, "vfw32.lib")
 
@@ -21,32 +22,32 @@ bool func_config(HWND hwnd, HINSTANCE dll_hinst);
 //---------------------------------------------------------------------
 aviutl2::raw::INPUT_PLUGIN_TABLE input_plugin_table = {
     aviutl2::raw::INPUT_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::INPUT_PLUGIN_TABLE::FLAG_AUDIO, // フラグ
-    L"AVI File Reader2 (sample)",                       // プラグインの名前
-    L"AviFile (*.avi)\0*.avi\0",                        // 入力ファイルフィルタ
-    L"Sample AVI File Reader2 version 2.01 By ＫＥＮくん",  // プラグインの情報
-    func_open,                                          // 入力ファイルをオープンする関数へのポインタ
-    func_close,                                         // 入力ファイルをクローズする関数へのポインタ
-    func_info_get,                                      // 入力ファイルの情報を取得する関数へのポインタ
-    func_read_video,                                    // 画像データを読み込む関数へのポインタ
-    func_read_audio,                                    // 音声データを読み込む関数へのポインタ
-    func_config,                                        // 入力設定のダイアログを要求された時に呼ばれる関数へのポインタ (nullptrなら呼ばれません)
+    L"AVI File Reader2 (sample)",                                                                // プラグインの名前
+    L"AviFile (*.avi)\0*.avi\0",                                                                 // 入力ファイルフィルタ
+    L"Sample AVI File Reader2 version 2.01 By ＫＥＮくん",                                       // プラグインの情報
+    func_open,       // 入力ファイルをオープンする関数へのポインタ
+    func_close,      // 入力ファイルをクローズする関数へのポインタ
+    func_info_get,   // 入力ファイルの情報を取得する関数へのポインタ
+    func_read_video, // 画像データを読み込む関数へのポインタ
+    func_read_audio, // 音声データを読み込む関数へのポインタ
+    func_config,     // 入力設定のダイアログを要求された時に呼ばれる関数へのポインタ (nullptrなら呼ばれません)
 };
 
 //---------------------------------------------------------------------
 // ファイルハンドル構造体
 //---------------------------------------------------------------------
 struct FILE_HANDLE {
-    int				flag;
+    int flag;
     static constexpr int FLAG_VIDEO = 1;
     static constexpr int FLAG_AUDIO = 2;
-    PAVIFILE		pfile;
-    PAVISTREAM		pvideo, paudio;
-    AVIFILEINFO		fileinfo;
-    AVISTREAMINFO	videoinfo, audioinfo;
-    void*			videoformat;
-    LONG			videoformatsize;
-    void*			audioformat;
-    LONG			audioformatsize;
+    PAVIFILE pfile;
+    PAVISTREAM pvideo, paudio;
+    AVIFILEINFO fileinfo;
+    AVISTREAMINFO videoinfo, audioinfo;
+    void* videoformat;
+    LONG videoformatsize;
+    void* audioformat;
+    LONG audioformatsize;
 };
 
 //---------------------------------------------------------------------
@@ -59,8 +60,7 @@ EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { // version
 //---------------------------------------------------------------------
 // プラグインDLL終了関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {
-}
+EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
 
 //---------------------------------------------------------------------
 // 入力プラグイン構造体のポインタを渡す関数
@@ -74,7 +74,8 @@ EXTERN_C __declspec(dllexport) aviutl2::raw::INPUT_PLUGIN_TABLE* GetInputPluginT
 //---------------------------------------------------------------------
 aviutl2::raw::INPUT_HANDLE func_open(LPCWSTR file) {
     FILE_HANDLE* fp = (FILE_HANDLE*)GlobalAlloc(GMEM_FIXED, sizeof(FILE_HANDLE));
-    if (fp == NULL) return NULL;
+    if (fp == NULL)
+        return NULL;
     ZeroMemory(fp, sizeof(FILE_HANDLE));
 
     if (AVIFileOpen(&fp->pfile, file, OF_READ, nullptr) != S_OK) {
@@ -148,7 +149,7 @@ bool func_close(aviutl2::raw::INPUT_HANDLE ih) {
 // ファイルの情報
 //---------------------------------------------------------------------
 bool func_info_get(aviutl2::raw::INPUT_HANDLE ih, aviutl2::raw::INPUT_INFO* iip) {
-    FILE_HANDLE	*fp = (FILE_HANDLE *)ih;
+    FILE_HANDLE* fp = (FILE_HANDLE*)ih;
 
     iip->flag = 0;
     if (fp->flag & FILE_HANDLE::FLAG_VIDEO) {
@@ -177,8 +178,10 @@ int func_read_video(aviutl2::raw::INPUT_HANDLE ih, int frame, void* buf) {
     FILE_HANDLE* fp = (FILE_HANDLE*)ih;
 
     LONG videosize, size;
-    if (AVIStreamRead(fp->pvideo, frame, 1, NULL, NULL, &videosize, NULL) != S_OK) return 0;
-    if (AVIStreamRead(fp->pvideo, frame, 1, buf, videosize, &size, NULL) != S_OK) return 0;
+    if (AVIStreamRead(fp->pvideo, frame, 1, NULL, NULL, &videosize, NULL) != S_OK)
+        return 0;
+    if (AVIStreamRead(fp->pvideo, frame, 1, buf, videosize, &size, NULL) != S_OK)
+        return 0;
     return size;
 }
 
@@ -191,7 +194,8 @@ int func_read_audio(aviutl2::raw::INPUT_HANDLE ih, int start, int length, void* 
     int samplesize;
 
     samplesize = ((WAVEFORMATEX*)fp->audioformat)->nBlockAlign;
-    if (AVIStreamRead(fp->paudio, start, length, buf, samplesize * length, NULL, &size) != S_OK) return 0;
+    if (AVIStreamRead(fp->paudio, start, length, buf, samplesize * length, NULL, &size) != S_OK)
+        return 0;
     return size;
 }
 

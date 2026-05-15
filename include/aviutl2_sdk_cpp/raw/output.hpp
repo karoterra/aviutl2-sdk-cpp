@@ -7,4 +7,4 @@ namespace aviutl2::raw {
 using ::OUTPUT_INFO;
 using ::OUTPUT_PLUGIN_TABLE;
 
-}
+} // namespace aviutl2::raw

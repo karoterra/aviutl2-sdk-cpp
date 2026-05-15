@@ -4,6 +4,7 @@
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
 #include <windows.h>
+
 #include <vfw.h>
 #pragma comment(lib, "vfw32.lib")
 
@@ -18,12 +19,12 @@ LPCWSTR func_get_config_text();
 //---------------------------------------------------------------------
 aviutl2::raw::OUTPUT_PLUGIN_TABLE output_plugin_table = {
     aviutl2::raw::OUTPUT_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::OUTPUT_PLUGIN_TABLE::FLAG_AUDIO, // フラグ
-    L"AVI File Saver2 (sample)",                    // プラグインの名前
-    L"AviFile (*.avi)\0*.avi\0",                    // 出力ファイルのフィルタ
-    L"Sample AVI File Saver2 version 2.01 By ＫＥＮくん",   // プラグインの情報
-    func_output,                                    // 出力時に呼ばれる関数へのポインタ
-    func_config,                                    // 出力設定のダイアログを要求された時に呼ばれる関数へのポインタ (nullptrなら呼ばれません)
-    func_get_config_text,                           // 出力設定のテキスト情報を取得する時に呼ばれる関数へのポインタ (nullptrなら呼ばれません)
+    L"AVI File Saver2 (sample)",                                                                   // プラグインの名前
+    L"AviFile (*.avi)\0*.avi\0",                          // 出力ファイルのフィルタ
+    L"Sample AVI File Saver2 version 2.01 By ＫＥＮくん", // プラグインの情報
+    func_output,                                          // 出力時に呼ばれる関数へのポインタ
+    func_config,          // 出力設定のダイアログを要求された時に呼ばれる関数へのポインタ (nullptrなら呼ばれません)
+    func_get_config_text, // 出力設定のテキスト情報を取得する時に呼ばれる関数へのポインタ (nullptrなら呼ばれません)
 };
 
 //---------------------------------------------------------------------
@@ -36,14 +37,12 @@ EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { // version
 //---------------------------------------------------------------------
 // プラグインDLL終了関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {
-}
+EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
 
 //---------------------------------------------------------------------
 // 出力プラグイン構造体のポインタを渡す関数
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) aviutl2::raw::OUTPUT_PLUGIN_TABLE* GetOutputPluginTable(void)
-{
+EXTERN_C __declspec(dllexport) aviutl2::raw::OUTPUT_PLUGIN_TABLE* GetOutputPluginTable(void) {
     return &output_plugin_table;
 }
 
@@ -51,13 +50,16 @@ EXTERN_C __declspec(dllexport) aviutl2::raw::OUTPUT_PLUGIN_TABLE* GetOutputPlugi
 // AVIファイルハンドル構造体
 //---------------------------------------------------------------------
 struct AVI_HANDLE {
-    PAVIFILE	pfile = nullptr;
-    PAVISTREAM	pvideo = nullptr;
-    PAVISTREAM	paudio = nullptr;
+    PAVIFILE pfile = nullptr;
+    PAVISTREAM pvideo = nullptr;
+    PAVISTREAM paudio = nullptr;
     ~AVI_HANDLE() {
-        if (paudio) AVIStreamRelease(paudio);
-        if (pvideo) AVIStreamRelease(pvideo);
-        if (pfile) AVIFileRelease(pfile);
+        if (paudio)
+            AVIStreamRelease(paudio);
+        if (pvideo)
+            AVIStreamRelease(pvideo);
+        if (pfile)
+            AVIFileRelease(pfile);
     }
 };
 
@@ -118,7 +120,8 @@ bool func_output(aviutl2::raw::OUTPUT_INFO* oip) {
 
     for (int frame = 0; frame < oip->n; frame++) {
         oip->func_rest_time_disp(frame, oip->n); // 残り時間を表示
-        if (oip->func_is_abort()) break; // 中断の確認
+        if (oip->func_is_abort())
+            break; // 中断の確認
 
         // ビデオの書き込み
         void* data = oip->func_get_video(frame, BI_RGB);
@@ -131,8 +134,10 @@ bool func_output(aviutl2::raw::OUTPUT_INFO* oip) {
         int audioNum = (int)((double)(frame + 1) / video.dwRate * video.dwScale * oip->audio_rate) - audioPos;
         int audioReaded = 0;
         data = oip->func_get_audio(audioPos, audioNum, &audioReaded, WAVE_FORMAT_PCM);
-        if (audioReaded == 0) continue;
-        if (AVIStreamWrite(avi.paudio, audioPos, audioReaded, data, audioReaded * wf.nBlockAlign, 0, NULL, NULL) != S_OK) {
+        if (audioReaded == 0)
+            continue;
+        if (AVIStreamWrite(avi.paudio, audioPos, audioReaded, data, audioReaded * wf.nBlockAlign, 0, NULL, NULL) !=
+            S_OK) {
             break;
         }
     }
@@ -154,6 +159,4 @@ bool func_config(HWND hwnd, HINSTANCE dll_hinst) {
 //---------------------------------------------------------------------
 // 出力設定のテキスト情報 (設定ボタンの隣に表示される)
 //---------------------------------------------------------------------
-LPCWSTR func_get_config_text() {
-    return L"サンプル設定情報";
-}
+LPCWSTR func_get_config_text() { return L"サンプル設定情報"; }

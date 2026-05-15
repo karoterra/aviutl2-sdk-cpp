@@ -6,8 +6,8 @@
 
 #include <Windows.h>
 
-#include <memory>
 #include <algorithm>
+#include <memory>
 
 #include <aviutl2_sdk_cpp/raw/filter.hpp>
 
@@ -18,23 +18,24 @@ bool func_proc_audio(aviutl2::raw::FILTER_PROC_AUDIO* audio);
 // フィルタ設定項目定義
 //---------------------------------------------------------------------
 auto luminance = aviutl2::raw::FILTER_ITEM_TRACK(L"明るさ", 1.0, 0.0, 2.0, 0.01);
-aviutl2::raw::FILTER_ITEM_SELECT::ITEM component_list[] = { { L"R成分のみ", 1 }, { L"G成分のみ", 2 }, { L"B成分のみ", 4 }, { L"RGB成分", 7 }, { nullptr } };
+aviutl2::raw::FILTER_ITEM_SELECT::ITEM component_list[] = {
+    {L"R成分のみ", 1}, {L"G成分のみ", 2}, {L"B成分のみ", 4}, {L"RGB成分", 7}, {nullptr}};
 auto component = aviutl2::raw::FILTER_ITEM_SELECT(L"対象", 7, component_list);
 auto volume = aviutl2::raw::FILTER_ITEM_TRACK(L"音量", 1.0, 0.0, 2.0, 0.01);
 auto mono = aviutl2::raw::FILTER_ITEM_CHECK(L"モノラル化", false);
-void* items[] = { &luminance, &component, &volume, &mono, nullptr };
+void* items[] = {&luminance, &component, &volume, &mono, nullptr};
 
 //---------------------------------------------------------------------
 // フィルタプラグイン構造体定義
 //---------------------------------------------------------------------
 aviutl2::raw::FILTER_PLUGIN_TABLE filter_plugin_table = {
     aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_AUDIO, // フラグ
-    L"メディアフィルタ(sample)",                    // プラグインの名前
-    L"サンプル",                                    // ラベルの初期値 (nullptrならデフォルトのラベルになります)
-    L"Sample MediaFilter version 2.00 By ＫＥＮくん",   // プラグインの情報
-    items,                                          // 設定項目の定義 (FILTER_ITEM_XXXポインタを列挙してnull終端したリストへのポインタ)
-    func_proc_video,                                // 画像フィルタ処理関数へのポインタ (FLAG_VIDEOが有効の時のみ呼ばれます)
-    func_proc_audio                                 // 音声フィルタ処理関数へのポインタ (FLAG_AUDIOが有効の時のみ呼ばれます)
+    L"メディアフィルタ(sample)",                                                                   // プラグインの名前
+    L"サンプル",                                      // ラベルの初期値 (nullptrならデフォルトのラベルになります)
+    L"Sample MediaFilter version 2.00 By ＫＥＮくん", // プラグインの情報
+    items,           // 設定項目の定義 (FILTER_ITEM_XXXポインタを列挙してnull終端したリストへのポインタ)
+    func_proc_video, // 画像フィルタ処理関数へのポインタ (FLAG_VIDEOが有効の時のみ呼ばれます)
+    func_proc_audio  // 音声フィルタ処理関数へのポインタ (FLAG_AUDIOが有効の時のみ呼ばれます)
 };
 
 //---------------------------------------------------------------------
@@ -47,8 +48,7 @@ EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { // version
 //---------------------------------------------------------------------
 // プラグインDLL解放関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {
-}
+EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
 
 //---------------------------------------------------------------------
 // フィルタ構造体のポインタを渡す関数

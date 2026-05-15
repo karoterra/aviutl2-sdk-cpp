@@ -4,11 +4,12 @@
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
 #include <windows.h>
+
 #include <commctrl.h>
 
-#include <aviutl2_sdk_cpp/raw/plugin.hpp>
-#include <aviutl2_sdk_cpp/raw/logger.hpp> // ログ出力
 #include <aviutl2_sdk_cpp/raw/config.hpp> // 設定関連
+#include <aviutl2_sdk_cpp/raw/logger.hpp> // ログ出力
+#include <aviutl2_sdk_cpp/raw/plugin.hpp>
 
 #define SampleWindowName L"SampleWindowClient"
 #define IDC_BUTTON 1001
@@ -20,43 +21,34 @@ aviutl2::raw::CONFIG_HANDLE* config;
 // 汎用プラグイン構造体定義
 //---------------------------------------------------------------------
 aviutl2::raw::COMMON_PLUGIN_TABLE common_plugin_table = {
-    L"Sample Window Client",                                // プラグインの名前
-    L"Sample Window Client version 2.00 By ＫＥＮくん",     // プラグインの情報
+    L"Sample Window Client",                            // プラグインの名前
+    L"Sample Window Client version 2.00 By ＫＥＮくん", // プラグインの情報
 };
 
 //---------------------------------------------------------------------
 // 必要とする本体バージョン番号取得関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) DWORD RequiredVersion() {
-    return 2003300;
-}
+EXTERN_C __declspec(dllexport) DWORD RequiredVersion() { return 2003300; }
 
 //---------------------------------------------------------------------
 // ログ出力機能初期化関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void InitializeLogger(aviutl2::raw::LOG_HANDLE* handle) {
-    logger = handle;
-}
+EXTERN_C __declspec(dllexport) void InitializeLogger(aviutl2::raw::LOG_HANDLE* handle) { logger = handle; }
 
 //---------------------------------------------------------------------
 // 設定関連初期化関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void InitializeConfig(aviutl2::raw::CONFIG_HANDLE* handle) {
-    config = handle;
-}
+EXTERN_C __declspec(dllexport) void InitializeConfig(aviutl2::raw::CONFIG_HANDLE* handle) { config = handle; }
 
 //---------------------------------------------------------------------
 // プラグインDLL初期化関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) {
-    return true;
-}
+EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { return true; }
 
 //---------------------------------------------------------------------
 // プラグインDLL解放関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {
-}
+EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
 
 //---------------------------------------------------------------------
 // 汎用プラグイン構造体のポインタを渡す関数
@@ -123,30 +115,17 @@ EXTERN_C __declspec(dllexport) void RegisterPlugin(aviutl2::raw::HOST_APP_TABLE*
     if (!RegisterClassEx(&wcex)) {
         return;
     }
-    auto hwnd = CreateWindowEx(
-        0,
-        SampleWindowName,
-        SampleWindowName,
-        WS_POPUP, // 親ウィンドウの指定無しでWS_CHILDが作れないので一旦WS_POPUPで作成しています
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        nullptr,
-        nullptr,
-        GetModuleHandle(0),
-        nullptr);
+    auto hwnd = CreateWindowEx(0, SampleWindowName, SampleWindowName,
+                               WS_POPUP, // 親ウィンドウの指定無しでWS_CHILDが作れないので一旦WS_POPUPで作成しています
+                               CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr,
+                               GetModuleHandle(0), nullptr);
     if (!hwnd) {
         return;
     }
     // ボタンの作成
-    CreateWindowEx(
-        0,
-        WC_BUTTON,
-        config->translate(config, L"オブジェクト作成"),
-        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-        10, 10, 200, config->get_layout_size(config, "SettingItemHeight"),
-        hwnd,
-        (HMENU)IDC_BUTTON,
-        GetModuleHandle(0),
-        nullptr);
+    CreateWindowEx(0, WC_BUTTON, config->translate(config, L"オブジェクト作成"), WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+                   10, 10, 200, config->get_layout_size(config, "SettingItemHeight"), hwnd, (HMENU)IDC_BUTTON,
+                   GetModuleHandle(0), nullptr);
 
     // ウィンドウを登録
     host->register_window_client(SampleWindowName, hwnd);

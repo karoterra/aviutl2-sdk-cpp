@@ -4,7 +4,7 @@
 
 namespace aviutl2::raw {
 
-using ::FONT_INFO;
 using ::CONFIG_HANDLE;
+using ::FONT_INFO;
 
-}
+} // namespace aviutl2::raw

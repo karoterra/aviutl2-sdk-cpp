@@ -4,23 +4,21 @@
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
 #include <windows.h>
+
 #include <algorithm>
 
-#include <aviutl2_sdk_cpp/raw/module.hpp>
 #include <aviutl2_sdk_cpp/raw/filter.hpp> // PIXEL_RGBA定義用
+#include <aviutl2_sdk_cpp/raw/module.hpp>
 
 //---------------------------------------------------------------------
 // プラグインDLL初期化関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) {
-    return true;
-}
+EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { return true; }
 
 //---------------------------------------------------------------------
 // プラグインDLL解放関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {
-}
+EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
 
 //---------------------------------------------------------------------
 // 合計を計算するサンプル関数
@@ -33,7 +31,6 @@ void sum(aviutl2::raw::SCRIPT_MODULE_PARAM* param) {
         total += param->get_param_double(i);
     }
     param->push_result_double(total);
-
 }
 
 //---------------------------------------------------------------------
@@ -69,19 +66,14 @@ void luminance(aviutl2::raw::SCRIPT_MODULE_PARAM* param) {
 //---------------------------------------------------------------------
 // スクリプトモジュール関数リスト定義
 //---------------------------------------------------------------------
-aviutl2::raw::SCRIPT_MODULE_FUNCTION functions[] = {
-    { L"sum", sum },
-    { L"luminance", luminance },
-    { nullptr }
-};
+aviutl2::raw::SCRIPT_MODULE_FUNCTION functions[] = {{L"sum", sum}, {L"luminance", luminance}, {nullptr}};
 
 //---------------------------------------------------------------------
 // スクリプトモジュール構造体定義
 //---------------------------------------------------------------------
 aviutl2::raw::SCRIPT_MODULE_TABLE script_module_table = {
-    L"Sample ScriptModule version 2.00 By ＫＥＮくん",	// モジュールの情報
-    functions
-};
+    L"Sample ScriptModule version 2.00 By ＫＥＮくん", // モジュールの情報
+    functions};
 
 //---------------------------------------------------------------------
 // スクリプトモジュール構造体のポインタを渡す関数

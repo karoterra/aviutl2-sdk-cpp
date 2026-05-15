@@ -9,4 +9,4 @@ using ::SCRIPT_MODULE_PARAM;
 using ::SCRIPT_MODULE_FUNCTION;
 using ::SCRIPT_MODULE_TABLE;
 
-}
+} // namespace aviutl2::raw

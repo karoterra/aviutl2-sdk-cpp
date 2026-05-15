@@ -4,9 +4,10 @@
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
 #include <windows.h>
-#include <memory>
+
 #include <algorithm>
 #include <d3d11.h>
+#include <memory>
 #include <wrl/client.h>
 using Microsoft::WRL::ComPtr;
 
@@ -22,19 +23,20 @@ auto width = aviutl2::raw::FILTER_ITEM_TRACK(L"横", 100, 1, 1000);
 auto height = aviutl2::raw::FILTER_ITEM_TRACK(L"縦", 100, 1, 1000);
 auto color = aviutl2::raw::FILTER_ITEM_COLOR(L"色", 0xffffff);
 auto frequency = aviutl2::raw::FILTER_ITEM_TRACK(L"周波数", 1000, 1, 24000);
-void* items[] = { &width, &height, &color, &frequency, nullptr };
+void* items[] = {&width, &height, &color, &frequency, nullptr};
 
 //---------------------------------------------------------------------
 // フィルタプラグイン構造体定義
 //---------------------------------------------------------------------
 aviutl2::raw::FILTER_PLUGIN_TABLE filter_plugin_table = {
-    aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_AUDIO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_INPUT, // フラグ
-    L"MediaObject(sample)",                         // プラグインの名前
-    L"サンプル",                                    // ラベルの初期値 (nullptrならデフォルトのラベルになります)
-    L"Sample MediaObject version 2.00 By ＫＥＮくん",   // プラグインの情報
-    items,                                          // 設定項目の定義 (FILTER_ITEM_XXXポインタを列挙してnull終端したリストへのポインタ)
-    func_proc_video,                                // 画像フィルタ処理関数へのポインタ (FLAG_VIDEOが有効の時のみ呼ばれます)
-    func_proc_audio                                 // 音声フィルタ処理関数へのポインタ (FLAG_AUDIOが有効の時のみ呼ばれます)
+    aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_VIDEO | aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_AUDIO |
+        aviutl2::raw::FILTER_PLUGIN_TABLE::FLAG_INPUT, // フラグ
+    L"MediaObject(sample)",                            // プラグインの名前
+    L"サンプル",                                       // ラベルの初期値 (nullptrならデフォルトのラベルになります)
+    L"Sample MediaObject version 2.00 By ＫＥＮくん",  // プラグインの情報
+    items,           // 設定項目の定義 (FILTER_ITEM_XXXポインタを列挙してnull終端したリストへのポインタ)
+    func_proc_video, // 画像フィルタ処理関数へのポインタ (FLAG_VIDEOが有効の時のみ呼ばれます)
+    func_proc_audio  // 音声フィルタ処理関数へのポインタ (FLAG_AUDIOが有効の時のみ呼ばれます)
 };
 
 //---------------------------------------------------------------------
@@ -47,8 +49,7 @@ EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { // version
 //---------------------------------------------------------------------
 // プラグインDLL解放関数 (未定義なら呼ばれません)
 //---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {
-}
+EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
 
 //---------------------------------------------------------------------
 // フィルタ構造体のポインタを渡す関数
@@ -63,7 +64,8 @@ EXTERN_C __declspec(dllexport) aviutl2::raw::FILTER_PLUGIN_TABLE* GetFilterPlugi
 bool func_proc_video(aviutl2::raw::FILTER_PROC_VIDEO* video) {
     auto w = (int)width.value;
     auto h = (int)height.value;
-    if (w <= 0 || h <= 0) return false;
+    if (w <= 0 || h <= 0)
+        return false;
 
     // 指定サイズの画像を設定してTexture2Dを取得
     video->set_image_data(nullptr, w, h);
@@ -88,7 +90,7 @@ bool func_proc_video(aviutl2::raw::FILTER_PROC_VIDEO* video) {
 
     // 指定の色で塗りつぶす
     auto col = color.value;
-    const float color[4] = { col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f }; // 乗算済みアルファ
+    const float color[4] = {col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f}; // 乗算済みアルファ
     context->ClearRenderTargetView(rtv.Get(), color);
     return true;
 }
