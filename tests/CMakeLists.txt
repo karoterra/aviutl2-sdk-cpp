@@ -1,1 +1,3 @@
 add_subdirectory(header_check)
+add_subdirectory(enum_utils_tests)
+add_subdirectory(filter_items_tests)
