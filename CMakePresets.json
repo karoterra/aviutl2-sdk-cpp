@@ -15,7 +15,7 @@
                 "CMAKE_CXX_STANDARD_REQUIRED": "ON",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "AVIUTL2_SDK_CPP_BUILD_EXAMPLES": "ON",
-                "AVIUTL2_SDK_CPP_BUILD_TESTS": "OFF"
+                "AVIUTL2_SDK_CPP_BUILD_TESTS": "ON"
             }
         },
         {

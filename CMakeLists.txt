@@ -7,7 +7,7 @@ project(aviutl2-sdk-cpp
 )
 
 option(AVIUTL2_SDK_CPP_BUILD_EXAMPLES "Build examples" ON)
-option(AVIUTL2_SDK_CPP_BUILD_TESTS "Build tests" OFF)
+option(AVIUTL2_SDK_CPP_BUILD_TESTS "Build tests" ON)
 
 add_library(aviutl2_sdk_cpp INTERFACE)
 add_library(aviutl2::sdk_cpp ALIAS aviutl2_sdk_cpp)
