@@ -7,6 +7,6 @@ ColumnLimit: 120
 
 PointerAlignment: Left
 
-Cpp11BracedListStyle: FunctionCall
+Cpp11BracedListStyle: true
 
 IndentCaseLabels: true
