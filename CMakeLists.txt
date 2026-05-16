@@ -32,11 +32,26 @@ target_include_directories(aviutl2_sdk_cpp
 )
 
 set(AVIUTL2_SDK_DIR "" CACHE PATH "Path to aviutl2_sdk_mirror")
+set(AVIUTL2_SDK_GIT_TAG "3d4b39bc3b1169c2850c196f6ba13ec004e88e16" CACHE STRING "Git tag or commit hash of aviutl2_sdk_mirror to use")
 
 if(AVIUTL2_SDK_DIR)
     target_include_directories(aviutl2_sdk_cpp
         INTERFACE
             ${AVIUTL2_SDK_DIR}/include
+    )
+else()
+    include(FetchContent)
+    FetchContent_Declare(
+        aviutl2_sdk
+        GIT_REPOSITORY https://github.com/aviutl2/aviutl2_sdk_mirror.git
+        GIT_TAG ${AVIUTL2_SDK_GIT_TAG}
+        GIT_SHALLOW FALSE
+        SOURCE_SUBDIR cmake-do-not-add
+    )
+    FetchContent_MakeAvailable(aviutl2_sdk)
+    target_include_directories(aviutl2_sdk_cpp
+        INTERFACE
+            ${aviutl2_sdk_SOURCE_DIR}/include
     )
 endif()
 
