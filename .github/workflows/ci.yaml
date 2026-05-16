@@ -9,10 +9,10 @@ on:
 
 jobs:
   check:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     defaults:
       run:
-        shell: bash
+        shell: pwsh
 
     steps:
       - name: Checkout source code
