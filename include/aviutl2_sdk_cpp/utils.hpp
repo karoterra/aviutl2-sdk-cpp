@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <initializer_list>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -69,29 +70,6 @@ using aviutl2::utils::enum_utils::detail::operator&=;
 using aviutl2::utils::enum_utils::detail::operator^=;
 
 // -----------------------------------------------------------------------------
-// Singleton
-// -----------------------------------------------------------------------------
-
-namespace aviutl2::utils {
-
-template <typename Derived> class Singleton {
-  public:
-    Singleton(const Singleton&) = delete;
-    Singleton& operator=(const Singleton&) = delete;
-
-    static Derived& instance() {
-        static Derived inst{token{}};
-        return inst;
-    }
-
-  protected:
-    struct token {};
-    Singleton() = default;
-};
-
-}; // namespace aviutl2::utils
-
-// -----------------------------------------------------------------------------
 // Miscs
 // -----------------------------------------------------------------------------
 
@@ -106,6 +84,20 @@ inline std::wstring to_wstring(const char* str) {
     std::wstring wstr(len, L'\0');
     MultiByteToWideChar(code_page, 0, str, -1, wstr.data(), len);
     return wstr;
+}
+
+struct FileFilterItem {
+    std::wstring name;    // フィルタの名前 (例: "AviFile (*.avi)")
+    std::wstring pattern; // ファイルパターン (例: "*.avi")
+};
+
+inline std::wstring make_file_filter(std::initializer_list<FileFilterItem> items) {
+    std::wstring filefilter;
+    for (const auto& i : items) {
+        filefilter += i.name + L'\0' + i.pattern + L'\0';
+    }
+    filefilter += L'\0'; // 終端
+    return filefilter;
 }
 
 } // namespace aviutl2::utils

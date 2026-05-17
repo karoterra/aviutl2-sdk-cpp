@@ -14,6 +14,7 @@
 #include <aviutl2_sdk_cpp/common.hpp>
 #include <aviutl2_sdk_cpp/config.hpp>
 #include <aviutl2_sdk_cpp/filter.hpp>
+#include <aviutl2_sdk_cpp/input.hpp>
 #include <aviutl2_sdk_cpp/logger.hpp>
 #include <aviutl2_sdk_cpp/utils.hpp>
 

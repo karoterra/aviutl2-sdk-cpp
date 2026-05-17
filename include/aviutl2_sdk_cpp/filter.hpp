@@ -112,17 +112,10 @@ class File {
     std::wstring filefilter_;
 
   public:
-    struct Filter {
-        std::wstring name;    // フィルタの名前 (例: "AviFile (*.avi)")
-        std::wstring pattern; // ファイルパターン (例: "*.avi")
-    };
-
     File(LPCWSTR name, LPCWSTR value, LPCWSTR filefilter) : item_(name, value, filefilter) {}
-    File(LPCWSTR name, LPCWSTR value, std::initializer_list<Filter> filefilter) : item_(name, value, nullptr) {
-        for (const auto& f : filefilter) {
-            this->filefilter_ += f.name + L'\0' + f.pattern + L'\0';
-        }
-        this->filefilter_ += L'\0'; // 終端
+    File(LPCWSTR name, LPCWSTR value, std::initializer_list<utils::FileFilterItem> filefilter)
+        : item_(name, value, nullptr) {
+        filefilter_ = utils::make_file_filter(filefilter);
         item_.filefilter = this->filefilter_.c_str();
     }
 
@@ -290,16 +283,6 @@ enum class FilterFlag : int {
 };
 
 template <typename T>
-concept InitializablePlugin = requires(T& a, DWORD version) {
-    { a.initialize_impl(version) } -> std::convertible_to<bool>;
-};
-
-template <typename T>
-concept UninitializablePlugin = requires(T& a) {
-    { a.uninitialize_impl() } -> std::same_as<void>;
-};
-
-template <typename T>
 concept ProcVideoPlugin = requires(T& a, FilterProcVideo* video) {
     { a.proc_video_impl(video) } -> std::convertible_to<bool>;
 };
@@ -309,9 +292,9 @@ concept ProcAudioPlugin = requires(T& a, FilterProcAudio* audio) {
     { a.proc_audio_impl(audio) } -> std::convertible_to<bool>;
 };
 
-template <typename Derived> class FilterPlugin : public utils::Singleton<Derived> {
+template <typename Derived> class FilterPlugin : public aviutl2::Singleton<Derived> {
   protected:
-    using token = typename utils::Singleton<Derived>::token;
+    using token = typename aviutl2::Singleton<Derived>::token;
 
   public:
     FilterFlag flag_;
