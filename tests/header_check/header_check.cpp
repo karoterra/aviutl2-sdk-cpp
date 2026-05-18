@@ -3,6 +3,7 @@
 
 #include <aviutl2_sdk_cpp/raw.hpp>
 
+#include <aviutl2_sdk_cpp/raw/cache.hpp>
 #include <aviutl2_sdk_cpp/raw/config.hpp>
 #include <aviutl2_sdk_cpp/raw/filter.hpp>
 #include <aviutl2_sdk_cpp/raw/input.hpp>

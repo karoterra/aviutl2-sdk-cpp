@@ -4,6 +4,8 @@
 
 namespace aviutl2::raw {
 
+using ::OBJECT_HANDLE;
+
 using ::FILTER_ITEM_BUTTON;
 using ::FILTER_ITEM_CHECK;
 using ::FILTER_ITEM_COLOR;
@@ -17,6 +19,17 @@ using ::FILTER_ITEM_STRING;
 using ::FILTER_ITEM_TEXT;
 using ::FILTER_ITEM_TRACK;
 
+using ::BILLBOARD_MODE;
+using ::BLEND_MODE;
+using ::SAMPLER_MODE;
+using ::VERTEX_COLOR;
+using ::VERTEX_COLOR_NORM;
+using ::VERTEX_TEXTURE;
+using ::VERTEX_TEXTURE_NORM;
+using ::VERTEX_TYPE;
+
+using ::OBJECT_AUDIO_PARAM;
+using ::OBJECT_IMAGE_PARAM;
 using ::OBJECT_INFO;
 using ::PIXEL_RGBA;
 using ::SCENE_INFO;
