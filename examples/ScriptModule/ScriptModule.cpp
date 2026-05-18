@@ -3,12 +3,10 @@
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-#include <windows.h>
-
-#include <algorithm>
-
 #include <aviutl2_sdk_cpp/raw/filter.hpp> // PIXEL_RGBA定義用
 #include <aviutl2_sdk_cpp/raw/module.hpp>
+
+#include <algorithm>
 
 //---------------------------------------------------------------------
 // プラグインDLL初期化関数 (未定義なら呼ばれません)

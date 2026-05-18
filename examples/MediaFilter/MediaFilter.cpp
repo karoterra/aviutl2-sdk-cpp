@@ -4,12 +4,10 @@
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
 
-#include <Windows.h>
+#include <aviutl2_sdk_cpp/filter.hpp>
 
 #include <algorithm>
 #include <memory>
-
-#include <aviutl2_sdk_cpp/filter.hpp>
 
 using aviutl2::PixelRgba;
 using aviutl2::filter::FilterFlag;

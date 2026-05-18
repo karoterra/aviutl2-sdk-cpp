@@ -1,7 +1,7 @@
-#include <Windows.h>
 #include <cassert>
 
 #include <aviutl2_sdk_cpp/utils.hpp>
+
 enum class Enum : int {
     A = 1 << 0,
     B = 1 << 1,

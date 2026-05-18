@@ -1,5 +1,9 @@
 #pragma once
 
+#include <aviutl2_sdk_cpp/windows.hpp>
+
+#include <cstdint>
+
 #include <aviutl2_sdk/filter2.h>
 
 namespace aviutl2::raw {

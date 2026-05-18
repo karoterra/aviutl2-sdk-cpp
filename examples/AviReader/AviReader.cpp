@@ -3,13 +3,10 @@
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-#include <windows.h>
+#include <aviutl2_sdk_cpp/input.hpp>
 
 #include <vfw.h>
 #pragma comment(lib, "vfw32.lib")
-
-#include <aviutl2_sdk_cpp/input.hpp>
-#include <aviutl2_sdk_cpp/utils.hpp>
 
 using aviutl2::input::InputFlag;
 using aviutl2::input::InputHandle;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <aviutl2_sdk_cpp/windows.hpp>
+
 #include <aviutl2_sdk/input2.h>
 
 namespace aviutl2::raw {

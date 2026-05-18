@@ -1,5 +1,7 @@
 #pragma once
 
+#include <aviutl2_sdk_cpp/windows.hpp>
+
 #include <concepts>
 #include <initializer_list>
 #include <stdexcept>

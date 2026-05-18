@@ -1,8 +1,6 @@
-#include <Windows.h>
-#include <cassert>
-
 #include <aviutl2_sdk_cpp/input.hpp>
-#include <aviutl2_sdk_cpp/utils.hpp>
+
+#include <cassert>
 
 class SkeletonInputPlugin : public aviutl2::input::InputPlugin<SkeletonInputPlugin> {
   public:

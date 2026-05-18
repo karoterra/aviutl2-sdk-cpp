@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include <cassert>
 #include <type_traits>
 

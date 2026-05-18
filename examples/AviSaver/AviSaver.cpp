@@ -3,12 +3,10 @@
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-#include <windows.h>
+#include <aviutl2_sdk_cpp/raw/output.hpp>
 
 #include <vfw.h>
 #pragma comment(lib, "vfw32.lib")
-
-#include <aviutl2_sdk_cpp/raw/output.hpp>
 
 bool func_output(aviutl2::raw::OUTPUT_INFO* oip);
 bool func_config(HWND hwnd, HINSTANCE dll_hinst);

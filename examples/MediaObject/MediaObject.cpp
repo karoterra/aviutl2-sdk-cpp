@@ -3,15 +3,13 @@
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-#include <windows.h>
+#include <aviutl2_sdk_cpp/filter.hpp>
 
 #include <d3d11.h>
 #include <wrl/client.h>
 
 #include <algorithm>
 #include <memory>
-
-#include <aviutl2_sdk_cpp/filter.hpp>
 
 using Microsoft::WRL::ComPtr;
 

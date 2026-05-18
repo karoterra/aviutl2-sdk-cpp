@@ -3,13 +3,12 @@
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-#include <windows.h>
-
-#include <commctrl.h>
 
 #include <aviutl2_sdk_cpp/raw/config.hpp> // 設定関連
 #include <aviutl2_sdk_cpp/raw/logger.hpp> // ログ出力
 #include <aviutl2_sdk_cpp/raw/plugin.hpp>
+
+#include <commctrl.h>
 
 #define SampleWindowName L"SampleWindowClient"
 #define IDC_BUTTON 1001
