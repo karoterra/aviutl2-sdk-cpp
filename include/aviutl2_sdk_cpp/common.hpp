@@ -2,6 +2,8 @@
 
 #include <concepts>
 
+#include <aviutl2_sdk_cpp/raw/filter.hpp>
+
 #define AVIUTL2_API extern "C" __declspec(dllexport)
 
 namespace aviutl2 {
@@ -30,5 +32,8 @@ template <typename Derived> class Singleton {
     struct token {};
     Singleton() = default;
 };
+
+/// @brief RGBA32bit構造体
+using PixelRgba = raw::PIXEL_RGBA;
 
 }; // namespace aviutl2

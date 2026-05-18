@@ -12,6 +12,7 @@
 #include <aviutl2_sdk_cpp/raw/output.hpp>
 #include <aviutl2_sdk_cpp/raw/plugin.hpp>
 
+#include <aviutl2_sdk_cpp/cache.hpp>
 #include <aviutl2_sdk_cpp/common.hpp>
 #include <aviutl2_sdk_cpp/config.hpp>
 #include <aviutl2_sdk_cpp/filter.hpp>

@@ -258,9 +258,6 @@ struct SeparatorSpec {
 
 inline SeparatorSpec separator(LPCWSTR name) { return {name}; }
 
-/// @brief RGBA32bit構造体
-using PixelRgba = raw::PIXEL_RGBA;
-
 /// @brief シーン情報構造体
 using SceneInfo = raw::SCENE_INFO;
 

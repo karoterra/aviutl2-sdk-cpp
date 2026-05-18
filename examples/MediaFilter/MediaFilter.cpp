@@ -11,11 +11,11 @@
 
 #include <aviutl2_sdk_cpp/filter.hpp>
 
+using aviutl2::PixelRgba;
 using aviutl2::filter::FilterFlag;
 using aviutl2::filter::FilterProcAudio;
 using aviutl2::filter::FilterProcVideo;
 using aviutl2::filter::group;
-using aviutl2::filter::PixelRgba;
 using aviutl2::filter::separator;
 using aviutl2::utils::enum_utils::has_flag;
 
