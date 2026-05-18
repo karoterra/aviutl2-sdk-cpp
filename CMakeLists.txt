@@ -32,7 +32,7 @@ target_include_directories(aviutl2_sdk_cpp
 )
 
 set(AVIUTL2_SDK_DIR "" CACHE PATH "Path to aviutl2_sdk_mirror")
-set(AVIUTL2_SDK_GIT_TAG "3d4b39bc3b1169c2850c196f6ba13ec004e88e16" CACHE STRING "Git tag or commit hash of aviutl2_sdk_mirror to use")
+set(AVIUTL2_SDK_GIT_TAG "a0747d4cec0700a967b9c54b18c5257993d273f4" CACHE STRING "Git tag or commit hash of aviutl2_sdk_mirror to use")
 
 if(AVIUTL2_SDK_DIR)
     target_include_directories(aviutl2_sdk_cpp
