@@ -23,6 +23,7 @@ target_compile_definitions(aviutl2_sdk_cpp
     INTERFACE
         UNICODE
         _UNICODE
+        NOMINMAX
 )
 
 target_include_directories(aviutl2_sdk_cpp
