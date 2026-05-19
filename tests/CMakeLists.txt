@@ -6,3 +6,4 @@ add_subdirectory(make_fourcc_tests)
 
 add_subdirectory(valid_input_plugin_tests)
 add_subdirectory(valid_output_plugin_tests)
+add_subdirectory(valid_script_module_tests)

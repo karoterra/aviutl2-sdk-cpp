@@ -3,25 +3,12 @@
 //
 // 公式SDKのサンプルコードを本ラッパー用に書き換えたものです
 //----------------------------------------------------------------------------------
-#include <aviutl2_sdk_cpp/raw/filter.hpp> // PIXEL_RGBA定義用
-#include <aviutl2_sdk_cpp/raw/module.hpp>
+#include <aviutl2_sdk_cpp/module.hpp>
 
 #include <algorithm>
 
-//---------------------------------------------------------------------
-// プラグインDLL初期化関数 (未定義なら呼ばれません)
-//---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) bool InitializePlugin(DWORD version) { return true; }
-
-//---------------------------------------------------------------------
-// プラグインDLL解放関数 (未定義なら呼ばれません)
-//---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) void UninitializePlugin() {}
-
-//---------------------------------------------------------------------
 // 合計を計算するサンプル関数
-//---------------------------------------------------------------------
-void sum(aviutl2::raw::SCRIPT_MODULE_PARAM* param) {
+void sum(aviutl2::module::ScriptModuleParam* param) {
     // 引数の合計を計算
     double total = 0.0;
     auto num = param->get_param_num();
@@ -31,17 +18,15 @@ void sum(aviutl2::raw::SCRIPT_MODULE_PARAM* param) {
     param->push_result_double(total);
 }
 
-//---------------------------------------------------------------------
 // 明るさを調整するサンプル関数
-//---------------------------------------------------------------------
-void luminance(aviutl2::raw::SCRIPT_MODULE_PARAM* param) {
+void luminance(aviutl2::module::ScriptModuleParam* param) {
     // 引数を取得
     auto n = param->get_param_num();
     if (n != 4) {
         param->set_error("引数の数が正しくありません");
         return;
     }
-    auto p = (aviutl2::raw::PIXEL_RGBA*)param->get_param_data(0);
+    auto p = (aviutl2::PixelRgba*)param->get_param_data(0);
     auto w = param->get_param_int(1);
     auto h = param->get_param_int(2);
     auto v = param->get_param_double(3);
@@ -61,21 +46,16 @@ void luminance(aviutl2::raw::SCRIPT_MODULE_PARAM* param) {
     }
 }
 
-//---------------------------------------------------------------------
-// スクリプトモジュール関数リスト定義
-//---------------------------------------------------------------------
-aviutl2::raw::SCRIPT_MODULE_FUNCTION functions[] = {{L"sum", sum}, {L"luminance", luminance}, {nullptr}};
+class SampleScriptModule : public aviutl2::module::ScriptModule<SampleScriptModule> {
+  public:
+    explicit SampleScriptModule(token) {
+        // モジュールの情報を設定
+        information_ = L"Sample ScriptModule version 2.00 By ＫＥＮくん";
+        add_functions({
+            {L"sum", sum},
+            {L"luminance", luminance},
+        });
+    }
+};
 
-//---------------------------------------------------------------------
-// スクリプトモジュール構造体定義
-//---------------------------------------------------------------------
-aviutl2::raw::SCRIPT_MODULE_TABLE script_module_table = {
-    L"Sample ScriptModule version 2.00 By ＫＥＮくん", // モジュールの情報
-    functions};
-
-//---------------------------------------------------------------------
-// スクリプトモジュール構造体のポインタを渡す関数
-//---------------------------------------------------------------------
-EXTERN_C __declspec(dllexport) aviutl2::raw::SCRIPT_MODULE_TABLE* GetScriptModuleTable(void) {
-    return &script_module_table;
-}
+AVIUTL2_REGISTER_SCRIPT_MODULE(SampleScriptModule)
