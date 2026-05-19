@@ -19,12 +19,6 @@
             }
         },
         {
-            "name": "ninja",
-            "displayName": "Ninja",
-            "inherits": "base",
-            "generator": "Ninja"
-        },
-        {
             "name": "vs",
             "displayName": "Visual Studio 2026",
             "inherits": "base",
@@ -33,30 +27,70 @@
                 "value": "x64",
                 "strategy": "external"
             }
+        },
+        {
+            "name": "ninja-msvc",
+            "displayName": "Ninja + MSVC",
+            "inherits": "base",
+            "generator": "Ninja",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "cl"
+            }
+        },
+        {
+            "name": "ninja-clang-cl",
+            "displayName": "Ninja + clang-cl",
+            "inherits": "base",
+            "generator": "Ninja",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "clang-cl"
+            }
         }
     ],
     "buildPresets": [
         {
-            "name": "ninja",
-            "displayName": "Build with Ninja",
-            "configurePreset": "ninja"
-        },
-        {
             "name": "vs",
             "displayName": "Build with Visual Studio 2026",
-            "configurePreset": "vs"
+            "configurePreset": "vs",
+            "configuration": "Debug"
+        },
+        {
+            "name": "ninja-msvc",
+            "displayName": "Build with Ninja + MSVC",
+            "configurePreset": "ninja-msvc"
+        },
+        {
+            "name": "ninja-clang-cl",
+            "displayName": "Build with Ninja + clang-cl",
+            "configurePreset": "ninja-clang-cl"
         }
     ],
     "testPresets": [
         {
-            "name": "ninja",
-            "displayName": "Test with Ninja",
-            "configurePreset": "ninja"
-        },
-        {
             "name": "vs",
             "displayName": "Test with Visual Studio 2026",
-            "configurePreset": "vs"
+            "configurePreset": "vs",
+            "configuration": "Debug"
+        },
+        {
+            "name": "ninja-msvc",
+            "displayName": "Test with Ninja + MSVC",
+            "configurePreset": "ninja-msvc"
+        },
+        {
+            "name": "ninja-clang-cl",
+            "displayName": "Test with Ninja + clang-cl",
+            "configurePreset": "ninja-clang-cl"
         }
     ]
 }

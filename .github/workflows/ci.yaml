@@ -9,6 +9,15 @@ on:
 
 jobs:
   check:
+    name: Check (${{ matrix.preset }})
+    strategy:
+      fail-fast: false
+      matrix:
+        preset:
+          - vs
+          - ninja-msvc
+          - ninja-clang-cl
+
     runs-on: windows-2025-vs2026
     defaults:
       run:
@@ -21,19 +30,24 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@v4
 
+      - name: Configure MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Show tool versions
         run: |
           cmake --version
           clang-format --version
 
       - name: Config
-        run: cmake --preset vs
+        run: cmake --preset ${{ matrix.preset }}
 
       - name: Build
-        run: cmake --build --preset vs --config Release
+        run: cmake --build --preset ${{ matrix.preset }}
 
       - name: Test
-        run: ctest --preset vs -C Release --output-on-failure
+        run: ctest --preset ${{ matrix.preset }} --output-on-failure
 
       - name: Check format
         run: mise run format-check

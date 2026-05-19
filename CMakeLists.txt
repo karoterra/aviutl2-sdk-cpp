@@ -16,7 +16,7 @@ target_compile_features(aviutl2_sdk_cpp INTERFACE cxx_std_20)
 
 target_compile_options(aviutl2_sdk_cpp
     INTERFACE
-        $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
+        $<$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>:/utf-8 /EHsc /Zc:__cplusplus>
 )
 
 target_compile_definitions(aviutl2_sdk_cpp
