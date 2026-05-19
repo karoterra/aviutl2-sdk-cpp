@@ -6,3 +6,4 @@ add_subdirectory(ScriptModule)
 add_subdirectory(WindowClient)
 
 add_subdirectory(skeleton_input_plugin)
+add_subdirectory(skeleton_output_plugin)
