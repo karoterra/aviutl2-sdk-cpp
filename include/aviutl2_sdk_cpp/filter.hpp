@@ -12,6 +12,7 @@
 #include <aviutl2_sdk_cpp/cache.hpp>
 #include <aviutl2_sdk_cpp/common.hpp>
 #include <aviutl2_sdk_cpp/config.hpp>
+#include <aviutl2_sdk_cpp/edit.hpp>
 #include <aviutl2_sdk_cpp/logger.hpp>
 #include <aviutl2_sdk_cpp/raw/filter.hpp>
 #include <aviutl2_sdk_cpp/raw/plugin.hpp>
@@ -19,8 +20,10 @@
 
 namespace aviutl2::filter {
 
+using EditSection = edit::EditSection;
+
 /// @brief オブジェクトハンドル
-using ObjectHandle = raw::OBJECT_HANDLE;
+using ObjectHandle = edit::ObjectHandle;
 
 template <typename T>
 concept FilterItem = requires(T& a) {
@@ -154,7 +157,7 @@ class Button {
     raw::FILTER_ITEM_BUTTON item_;
 
   public:
-    using callback_type = void (*)(raw::EDIT_SECTION*);
+    using callback_type = void (*)(EditSection*);
 
     Button(LPCWSTR name, callback_type func) : item_(name, func) {}
 
