@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include <aviutl2_sdk_cpp/cache.hpp>
 #include <aviutl2_sdk_cpp/common.hpp>
 #include <aviutl2_sdk_cpp/config.hpp>
 #include <aviutl2_sdk_cpp/logger.hpp>
@@ -17,6 +18,9 @@
 #include <aviutl2_sdk_cpp/utils.hpp>
 
 namespace aviutl2::filter {
+
+/// @brief オブジェクトハンドル
+using ObjectHandle = raw::OBJECT_HANDLE;
 
 template <typename T>
 concept FilterItem = requires(T& a) {
@@ -258,11 +262,24 @@ struct SeparatorSpec {
 
 inline SeparatorSpec separator(LPCWSTR name) { return {name}; }
 
+using VertexColor = raw::VERTEX_COLOR;
+using VertexColorNorm = raw::VERTEX_COLOR_NORM;
+using VertexTexture = raw::VERTEX_TEXTURE;
+using VertexTextureNorm = raw::VERTEX_TEXTURE_NORM;
+
+using VertexType = raw::VERTEX_TYPE;
+using SamplerMode = raw::SAMPLER_MODE;
+using BlendMode = raw::BLEND_MODE;
+using BillboardMode = raw::BILLBOARD_MODE;
+
 /// @brief シーン情報構造体
 using SceneInfo = raw::SCENE_INFO;
 
 /// @brief オブジェクト情報構造体
 using ObjectInfo = raw::OBJECT_INFO;
+
+using ObjectImageParam = raw::OBJECT_IMAGE_PARAM;
+using ObjectAudioParam = raw::OBJECT_AUDIO_PARAM;
 
 /// @brief 画像フィルタ処理用構造体
 using FilterProcVideo = raw::FILTER_PROC_VIDEO;
@@ -436,6 +453,7 @@ template <> struct enable_bitmask<filter::FilterFlag> : std::true_type {};
 #define AVIUTL2_REGISTER_FILTER_PLUGIN(PluginType)                                                                     \
     AVIUTL2_API void InitializeLogger(LOG_HANDLE* logger) { aviutl2::logger::initialize(logger); }                     \
     AVIUTL2_API void InitializeConfig(CONFIG_HANDLE* config) { aviutl2::config::initialize(config); }                  \
+    AVIUTL2_API void InitializeCache(CACHE_HANDLE* cache) { aviutl2::cache::initialize(cache); }                       \
     AVIUTL2_API FILTER_PLUGIN_TABLE* GetFilterPluginTable() {                                                          \
         return const_cast<FILTER_PLUGIN_TABLE*>(PluginType::instance().plugin_table());                                \
     }                                                                                                                  \
