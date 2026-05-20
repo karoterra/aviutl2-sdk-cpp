@@ -124,7 +124,9 @@ enum class OutputFlag : int {
     PROJECT_CONFIG = raw::OUTPUT_PLUGIN_TABLE::FLAG_PROJECT_CONFIG,
 };
 
-template <typename Derived> class OutputPlugin : public aviutl2::Singleton<Derived> {
+class OutputPluginBase {};
+
+template <typename Derived> class OutputPlugin : public aviutl2::Singleton<Derived>, public OutputPluginBase {
   protected:
     using token = typename aviutl2::Singleton<Derived>::token;
 
@@ -261,6 +263,11 @@ template <typename Derived> class OutputPlugin : public aviutl2::Singleton<Deriv
   private:
     Derived* derived() { return static_cast<Derived*>(this); }
     const Derived* derived() const { return static_cast<const Derived*>(this); }
+};
+
+template <typename T>
+concept OutputPluginType = std::derived_from<std::remove_cvref_t<T>, OutputPluginBase> && requires(T& plugin) {
+    { plugin.plugin_table() } -> std::same_as<const raw::OUTPUT_PLUGIN_TABLE*>;
 };
 
 }; // namespace aviutl2::output

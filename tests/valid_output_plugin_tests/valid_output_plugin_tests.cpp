@@ -13,6 +13,7 @@ class ValidOutputPlugin : public aviutl2::output::OutputPlugin<ValidOutputPlugin
     bool output_impl(OutputInfo& info) { return false; }
 };
 
+static_assert(aviutl2::output::OutputPluginType<ValidOutputPlugin>);
 static_assert(aviutl2::output::OutputablePlugin<ValidOutputPlugin>);
 
 void test_plugin() { ValidOutputPlugin::instance(); }

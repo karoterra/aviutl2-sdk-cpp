@@ -20,6 +20,7 @@ class ValidInputPlugin : public aviutl2::input::InputPlugin<ValidInputPlugin> {
     }
 };
 
+static_assert(aviutl2::input::InputPluginType<ValidInputPlugin>);
 static_assert(aviutl2::input::OpenablePlugin<ValidInputPlugin>);
 static_assert(aviutl2::input::CloseablePlugin<ValidInputPlugin>);
 static_assert(aviutl2::input::InputInfoGettablePlugin<ValidInputPlugin>);

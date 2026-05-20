@@ -309,7 +309,9 @@ concept ProcAudioPlugin = requires(T& a, FilterProcAudio* audio) {
     { a.proc_audio_impl(audio) } -> std::convertible_to<bool>;
 };
 
-template <typename Derived> class FilterPlugin : public aviutl2::Singleton<Derived> {
+class FilterPluginBase {};
+
+template <typename Derived> class FilterPlugin : public aviutl2::Singleton<Derived>, public FilterPluginBase {
   protected:
     using token = typename aviutl2::Singleton<Derived>::token;
 
@@ -445,6 +447,11 @@ template <typename Derived> class FilterPlugin : public aviutl2::Singleton<Deriv
     }
 
     static void* to_void_ptr(const void* ptr) { return const_cast<void*>(ptr); }
+};
+
+template <typename T>
+concept FilterPluginType = std::derived_from<std::remove_cvref_t<T>, FilterPluginBase> && requires(T& plugin) {
+    { plugin.plugin_table() } -> std::same_as<const raw::FILTER_PLUGIN_TABLE*>;
 };
 
 }; // namespace aviutl2::filter

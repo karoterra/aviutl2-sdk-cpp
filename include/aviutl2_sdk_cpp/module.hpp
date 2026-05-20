@@ -17,7 +17,9 @@ using ScriptModuleParam = raw::SCRIPT_MODULE_PARAM;
 
 using ScriptModuleFunction = raw::SCRIPT_MODULE_FUNCTION;
 
-template <typename Derived> class ScriptModule : public aviutl2::Singleton<Derived> {
+class ScriptModuleBase {};
+
+template <typename Derived> class ScriptModule : public aviutl2::Singleton<Derived>, public ScriptModuleBase {
   protected:
     using token = typename aviutl2::Singleton<Derived>::token;
 
@@ -81,6 +83,11 @@ template <typename Derived> class ScriptModule : public aviutl2::Singleton<Deriv
 
     Derived* derived() { return static_cast<Derived*>(this); }
     const Derived* derived() const { return static_cast<const Derived*>(this); }
+};
+
+template <typename T>
+concept ScriptModuleType = std::derived_from<std::remove_cvref_t<T>, ScriptModuleBase> && requires(T& plugin) {
+    { plugin.plugin_table() } -> std::same_as<const raw::SCRIPT_MODULE_TABLE*>;
 };
 
 }; // namespace aviutl2::module

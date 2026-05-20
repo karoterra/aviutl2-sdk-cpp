@@ -113,7 +113,9 @@ enum class InputFlag : int {
     MULTI_TRACK = 32, // マルチトラックをサポートする ※func_set_track()が呼ばれるようになる
 };
 
-template <typename Derived> class InputPlugin : public aviutl2::Singleton<Derived> {
+class InputPluginBase {};
+
+template <typename Derived> class InputPlugin : public aviutl2::Singleton<Derived>, public InputPluginBase {
   protected:
     using token = typename aviutl2::Singleton<Derived>::token;
 
@@ -304,6 +306,11 @@ template <typename Derived> class InputPlugin : public aviutl2::Singleton<Derive
   private:
     Derived* derived() { return static_cast<Derived*>(this); }
     const Derived* derived() const { return static_cast<const Derived*>(this); }
+};
+
+template <typename T>
+concept InputPluginType = std::derived_from<std::remove_cvref_t<T>, InputPluginBase> && requires(T& plugin) {
+    { plugin.plugin_table() } -> std::same_as<const raw::INPUT_PLUGIN_TABLE*>;
 };
 
 }; // namespace aviutl2::input
