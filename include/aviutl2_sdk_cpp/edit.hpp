@@ -690,7 +690,7 @@ class EditHandle {
     raw::EDIT_HANDLE* raw_;
 };
 
-std::optional<ProjectFile> EditSection::get_project_file(EditHandle& edit) const {
+inline std::optional<ProjectFile> EditSection::get_project_file(EditHandle& edit) const {
     if (!raw_ || !raw_->get_project_file) {
         return std::nullopt;
     }
