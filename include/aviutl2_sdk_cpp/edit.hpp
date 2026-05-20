@@ -178,6 +178,306 @@ struct EffectItem {
     EffectItemType type;
 };
 
+class ReadSection {
+  public:
+    explicit ReadSection(raw::EDIT_SECTION* raw) : raw_(raw) {}
+
+    ObjectHandle find_object(int layer, int frame) const {
+        if (!raw_ || !raw_->find_object) {
+            return nullptr;
+        }
+        return raw_->find_object(layer, frame);
+    }
+
+    int count_object_effect(ObjectHandle object, LPCWSTR effect) const {
+        if (!raw_ || !raw_->count_object_effect) {
+            return 0;
+        }
+        return raw_->count_object_effect(object, effect);
+    }
+
+    ObjectLayerFrame get_object_layer_frame(ObjectHandle object) const {
+        if (!raw_ || !raw_->get_object_layer_frame) {
+            return {};
+        }
+        return raw_->get_object_layer_frame(object);
+    }
+
+    std::string get_object_alias(ObjectHandle object) const {
+        if (!raw_ || !raw_->get_object_alias) {
+            return {};
+        }
+        return detail::safe_string(raw_->get_object_alias(object));
+    }
+
+    std::string get_object_item_value(ObjectHandle object, LPCWSTR effect, LPCWSTR item) const {
+        if (!raw_ || !raw_->get_object_item_value) {
+            return {};
+        }
+        return detail::safe_string(raw_->get_object_item_value(object, effect, item));
+    }
+
+    ObjectHandle get_focus_object() const {
+        if (!raw_ || !raw_->get_focus_object) {
+            return nullptr;
+        }
+        return raw_->get_focus_object();
+    }
+
+    ObjectHandle get_selected_object(int index) const {
+        if (!raw_ || !raw_->get_selected_object) {
+            return nullptr;
+        }
+        return raw_->get_selected_object(index);
+    }
+
+    int get_selected_object_num() const {
+        if (!raw_ || !raw_->get_selected_object_num) {
+            return 0;
+        }
+        return raw_->get_selected_object_num();
+    }
+
+    bool is_support_media_file(LPCWSTR file, bool strict) const {
+        if (!raw_ || !raw_->is_support_media_file) {
+            return false;
+        }
+        return raw_->is_support_media_file(file, strict);
+    }
+
+    std::optional<MediaInfo> get_media_info(LPCWSTR file) const {
+        if (!raw_ || !raw_->get_media_info) {
+            return std::nullopt;
+        }
+        MediaInfo info;
+        if (!raw_->get_media_info(file, &info, sizeof(MediaInfo))) {
+            return std::nullopt;
+        }
+        return info;
+    }
+
+    std::wstring get_object_name(ObjectHandle object) const {
+        if (!raw_ || !raw_->get_object_name) {
+            return {};
+        }
+        return detail::safe_wstring(raw_->get_object_name(object));
+    }
+
+    std::wstring get_layer_name(int layer) const {
+        if (!raw_ || !raw_->get_layer_name) {
+            return {};
+        }
+        return detail::safe_wstring(raw_->get_layer_name(layer));
+    }
+
+    std::wstring get_scene_name() const {
+        if (!raw_ || !raw_->get_scene_name) {
+            return {};
+        }
+        return detail::safe_wstring(raw_->get_scene_name());
+    }
+
+    bool get_layer_enable(int layer) const {
+        if (!raw_ || !raw_->get_layer_enable) {
+            return false;
+        }
+        return raw_->get_layer_enable(layer);
+    }
+
+    bool get_layer_lock(int layer) const {
+        if (!raw_ || !raw_->get_layer_lock) {
+            return false;
+        }
+        return raw_->get_layer_lock(layer);
+    }
+
+    int get_object_section_num(ObjectHandle object) const {
+        if (!raw_ || !raw_->get_object_section_num) {
+            return 0;
+        }
+        return raw_->get_object_section_num(object);
+    }
+
+    int get_focus_object_section() const {
+        if (!raw_ || !raw_->get_focus_object_section) {
+            return -1;
+        }
+        return raw_->get_focus_object_section();
+    }
+
+  protected:
+    raw::EDIT_SECTION* raw_;
+};
+
+class EditSection : public ReadSection {
+  public:
+    using ReadSection::ReadSection;
+
+    EditInfo* info() const {
+        if (!raw_) {
+            return nullptr;
+        }
+        return raw_->info;
+    }
+
+    ObjectHandle create_object_from_alias(LPCSTR alias, int layer, int frame, int length) const {
+        if (!raw_ || !raw_->create_object_from_alias) {
+            return nullptr;
+        }
+        return raw_->create_object_from_alias(alias, layer, frame, length);
+    }
+
+    bool set_object_item_value(ObjectHandle object, LPCWSTR effect, LPCWSTR item, LPCSTR value) const {
+        if (!raw_ || !raw_->set_object_item_value) {
+            return false;
+        }
+        return raw_->set_object_item_value(object, effect, item, value);
+    }
+
+    bool move_object(ObjectHandle object, int layer, int frame) const {
+        if (!raw_ || !raw_->move_object) {
+            return false;
+        }
+        return raw_->move_object(object, layer, frame);
+    }
+
+    void delete_object(ObjectHandle object) const {
+        if (!raw_ || !raw_->delete_object) {
+            return;
+        }
+        raw_->delete_object(object);
+    }
+
+    void set_focus_object(ObjectHandle object) const {
+        if (!raw_ || !raw_->set_focus_object) {
+            return;
+        }
+        raw_->set_focus_object(object);
+    }
+
+    std::optional<ProjectFile> get_project_file(EditHandle& edit) const;
+
+    std::optional<LayerFrame> get_mouse_layer_frame() const {
+        if (!raw_ || !raw_->get_mouse_layer_frame) {
+            return std::nullopt;
+        }
+        LayerFrame result;
+        if (!raw_->get_mouse_layer_frame(&result.layer, &result.frame)) {
+            return std::nullopt;
+        }
+        return result;
+    }
+
+    std::optional<LayerFrame> pos_to_layer_frame(int x, int y) const {
+        if (!raw_ || !raw_->pos_to_layer_frame) {
+            return std::nullopt;
+        }
+        LayerFrame result;
+        if (!raw_->pos_to_layer_frame(x, y, &result.layer, &result.frame)) {
+            return std::nullopt;
+        }
+        return result;
+    }
+
+    ObjectHandle create_object_from_media_file(LPCWSTR file, int layer, int frame, int length) const {
+        if (!raw_ || !raw_->create_object_from_media_file) {
+            return nullptr;
+        }
+        return raw_->create_object_from_media_file(file, layer, frame, length);
+    }
+
+    ObjectHandle create_object(LPCWSTR effect, int layer, int frame, int length) const {
+        if (!raw_ || !raw_->create_object) {
+            return nullptr;
+        }
+        return raw_->create_object(effect, layer, frame, length);
+    }
+
+    void set_cursor_layer_frame(int layer, int frame) const {
+        if (!raw_ || !raw_->set_cursor_layer_frame) {
+            return;
+        }
+        raw_->set_cursor_layer_frame(layer, frame);
+    }
+
+    void set_display_layer_frame(int layer, int frame) const {
+        if (!raw_ || !raw_->set_display_layer_frame) {
+            return;
+        }
+        raw_->set_display_layer_frame(layer, frame);
+    }
+
+    void set_select_range(int start, int end) const {
+        if (!raw_ || !raw_->set_select_range) {
+            return;
+        }
+        raw_->set_select_range(start, end);
+    }
+
+    void set_grid_bpm(float tempo, int beat, float offset) const {
+        if (!raw_ || !raw_->set_grid_bpm) {
+            return;
+        }
+        raw_->set_grid_bpm(tempo, beat, offset);
+    }
+
+    void set_object_name(ObjectHandle object, LPCWSTR name) const {
+        if (!raw_ || !raw_->set_object_name) {
+            return;
+        }
+        raw_->set_object_name(object, name);
+    }
+
+    void set_layer_name(int layer, LPCWSTR name) const {
+        if (!raw_ || !raw_->set_layer_name) {
+            return;
+        }
+        raw_->set_layer_name(layer, name);
+    }
+
+    void set_scene_name(LPCWSTR name) const {
+        if (!raw_ || !raw_->set_scene_name) {
+            return;
+        }
+        raw_->set_scene_name(name);
+    }
+
+    void set_scene_size(int width, int height) const {
+        if (!raw_ || !raw_->set_scene_size) {
+            return;
+        }
+        raw_->set_scene_size(width, height);
+    }
+
+    void set_scene_frame_rate(int rate, int scale) const {
+        if (!raw_ || !raw_->set_scene_frame_rate) {
+            return;
+        }
+        raw_->set_scene_frame_rate(rate, scale);
+    }
+
+    void set_scene_sample_rate(int sample_rate) const {
+        if (!raw_ || !raw_->set_scene_sample_rate) {
+            return;
+        }
+        raw_->set_scene_sample_rate(sample_rate);
+    }
+
+    void set_layer_enable(int layer, bool enable) const {
+        if (!raw_ || !raw_->set_layer_enable) {
+            return;
+        }
+        raw_->set_layer_enable(layer, enable);
+    }
+
+    void set_layer_lock(int layer, bool lock) const {
+        if (!raw_ || !raw_->set_layer_lock) {
+            return;
+        }
+        raw_->set_layer_lock(layer, lock);
+    }
+};
+
 class EditHandle {
   public:
     EditHandle() : raw_(nullptr) {}
@@ -390,316 +690,16 @@ class EditHandle {
     raw::EDIT_HANDLE* raw_;
 };
 
-class ReadSection {
-  public:
-    explicit ReadSection(raw::EDIT_SECTION* raw) : raw_(raw) {}
-
-    ObjectHandle find_object(int layer, int frame) const {
-        if (!raw_ || !raw_->find_object) {
-            return nullptr;
-        }
-        return raw_->find_object(layer, frame);
+std::optional<ProjectFile> EditSection::get_project_file(EditHandle& edit) const {
+    if (!raw_ || !raw_->get_project_file) {
+        return std::nullopt;
     }
-
-    int count_object_effect(ObjectHandle object, LPCWSTR effect) const {
-        if (!raw_ || !raw_->count_object_effect) {
-            return 0;
-        }
-        return raw_->count_object_effect(object, effect);
+    raw::PROJECT_FILE* project = raw_->get_project_file(edit.raw());
+    if (!project) {
+        return std::nullopt;
     }
-
-    ObjectLayerFrame get_object_layer_frame(ObjectHandle object) const {
-        if (!raw_ || !raw_->get_object_layer_frame) {
-            return {};
-        }
-        return raw_->get_object_layer_frame(object);
-    }
-
-    std::string get_object_alias(ObjectHandle object) const {
-        if (!raw_ || !raw_->get_object_alias) {
-            return {};
-        }
-        return detail::safe_string(raw_->get_object_alias(object));
-    }
-
-    std::string get_object_item_value(ObjectHandle object, LPCWSTR effect, LPCWSTR item) const {
-        if (!raw_ || !raw_->get_object_item_value) {
-            return {};
-        }
-        return detail::safe_string(raw_->get_object_item_value(object, effect, item));
-    }
-
-    ObjectHandle get_focus_object() const {
-        if (!raw_ || !raw_->get_focus_object) {
-            return nullptr;
-        }
-        return raw_->get_focus_object();
-    }
-
-    ObjectHandle get_selected_object(int index) const {
-        if (!raw_ || !raw_->get_selected_object) {
-            return nullptr;
-        }
-        return raw_->get_selected_object(index);
-    }
-
-    int get_selected_object_num() const {
-        if (!raw_ || !raw_->get_selected_object_num) {
-            return 0;
-        }
-        return raw_->get_selected_object_num();
-    }
-
-    bool is_support_media_file(LPCWSTR file, bool strict) const {
-        if (!raw_ || !raw_->is_support_media_file) {
-            return false;
-        }
-        return raw_->is_support_media_file(file, strict);
-    }
-
-    std::optional<MediaInfo> get_media_info(LPCWSTR file) const {
-        if (!raw_ || !raw_->get_media_info) {
-            return std::nullopt;
-        }
-        MediaInfo info;
-        if (!raw_->get_media_info(file, &info, sizeof(MediaInfo))) {
-            return std::nullopt;
-        }
-        return info;
-    }
-
-    std::wstring get_object_name(ObjectHandle object) const {
-        if (!raw_ || !raw_->get_object_name) {
-            return {};
-        }
-        return detail::safe_wstring(raw_->get_object_name(object));
-    }
-
-    std::wstring get_layer_name(int layer) const {
-        if (!raw_ || !raw_->get_layer_name) {
-            return {};
-        }
-        return detail::safe_wstring(raw_->get_layer_name(layer));
-    }
-
-    std::wstring get_scene_name() const {
-        if (!raw_ || !raw_->get_scene_name) {
-            return {};
-        }
-        return detail::safe_wstring(raw_->get_scene_name());
-    }
-
-    bool get_layer_enable(int layer) const {
-        if (!raw_ || !raw_->get_layer_enable) {
-            return false;
-        }
-        return raw_->get_layer_enable(layer);
-    }
-
-    bool get_layer_lock(int layer) const {
-        if (!raw_ || !raw_->get_layer_lock) {
-            return false;
-        }
-        return raw_->get_layer_lock(layer);
-    }
-
-    int get_object_section_num(ObjectHandle object) const {
-        if (!raw_ || !raw_->get_object_section_num) {
-            return 0;
-        }
-        return raw_->get_object_section_num(object);
-    }
-
-    int get_focus_object_section() const {
-        if (!raw_ || !raw_->get_focus_object_section) {
-            return -1;
-        }
-        return raw_->get_focus_object_section();
-    }
-
-  protected:
-    raw::EDIT_SECTION* raw_;
-};
-
-class EditSection : public ReadSection {
-  public:
-    using ReadSection::ReadSection;
-
-    EditInfo* info() const {
-        if (!raw_) {
-            return nullptr;
-        }
-        return raw_->info;
-    }
-
-    ObjectHandle create_object_from_alias(LPCSTR alias, int layer, int frame, int length) const {
-        if (!raw_ || !raw_->create_object_from_alias) {
-            return nullptr;
-        }
-        return raw_->create_object_from_alias(alias, layer, frame, length);
-    }
-
-    bool set_object_item_value(ObjectHandle object, LPCWSTR effect, LPCWSTR item, LPCSTR value) const {
-        if (!raw_ || !raw_->set_object_item_value) {
-            return false;
-        }
-        return raw_->set_object_item_value(object, effect, item, value);
-    }
-
-    bool move_object(ObjectHandle object, int layer, int frame) const {
-        if (!raw_ || !raw_->move_object) {
-            return false;
-        }
-        return raw_->move_object(object, layer, frame);
-    }
-
-    void delete_object(ObjectHandle object) const {
-        if (!raw_ || !raw_->delete_object) {
-            return;
-        }
-        raw_->delete_object(object);
-    }
-
-    void set_focus_object(ObjectHandle object) const {
-        if (!raw_ || !raw_->set_focus_object) {
-            return;
-        }
-        raw_->set_focus_object(object);
-    }
-
-    std::optional<ProjectFile> get_project_file(EditHandle& edit) const {
-        if (!raw_ || !raw_->get_project_file) {
-            return std::nullopt;
-        }
-        raw::PROJECT_FILE* project = raw_->get_project_file(edit.raw());
-        if (!project) {
-            return std::nullopt;
-        }
-        return ProjectFile(project);
-    }
-
-    std::optional<LayerFrame> get_mouse_layer_frame() const {
-        if (!raw_ || !raw_->get_mouse_layer_frame) {
-            return std::nullopt;
-        }
-        LayerFrame result;
-        if (!raw_->get_mouse_layer_frame(&result.layer, &result.frame)) {
-            return std::nullopt;
-        }
-        return result;
-    }
-
-    std::optional<LayerFrame> pos_to_layer_frame(int x, int y) const {
-        if (!raw_ || !raw_->pos_to_layer_frame) {
-            return std::nullopt;
-        }
-        LayerFrame result;
-        if (!raw_->pos_to_layer_frame(x, y, &result.layer, &result.frame)) {
-            return std::nullopt;
-        }
-        return result;
-    }
-
-    ObjectHandle create_object_from_media_file(LPCWSTR file, int layer, int frame, int length) const {
-        if (!raw_ || !raw_->create_object_from_media_file) {
-            return nullptr;
-        }
-        return raw_->create_object_from_media_file(file, layer, frame, length);
-    }
-
-    ObjectHandle create_object(LPCWSTR effect, int layer, int frame, int length) const {
-        if (!raw_ || !raw_->create_object) {
-            return nullptr;
-        }
-        return raw_->create_object(effect, layer, frame, length);
-    }
-
-    void set_cursor_layer_frame(int layer, int frame) const {
-        if (!raw_ || !raw_->set_cursor_layer_frame) {
-            return;
-        }
-        raw_->set_cursor_layer_frame(layer, frame);
-    }
-
-    void set_display_layer_frame(int layer, int frame) const {
-        if (!raw_ || !raw_->set_display_layer_frame) {
-            return;
-        }
-        raw_->set_display_layer_frame(layer, frame);
-    }
-
-    void set_select_range(int start, int end) const {
-        if (!raw_ || !raw_->set_select_range) {
-            return;
-        }
-        raw_->set_select_range(start, end);
-    }
-
-    void set_grid_bpm(float tempo, int beat, float offset) const {
-        if (!raw_ || !raw_->set_grid_bpm) {
-            return;
-        }
-        raw_->set_grid_bpm(tempo, beat, offset);
-    }
-
-    void set_object_name(ObjectHandle object, LPCWSTR name) const {
-        if (!raw_ || !raw_->set_object_name) {
-            return;
-        }
-        raw_->set_object_name(object, name);
-    }
-
-    void set_layer_name(int layer, LPCWSTR name) const {
-        if (!raw_ || !raw_->set_layer_name) {
-            return;
-        }
-        raw_->set_layer_name(layer, name);
-    }
-
-    void set_scene_name(LPCWSTR name) const {
-        if (!raw_ || !raw_->set_scene_name) {
-            return;
-        }
-        raw_->set_scene_name(name);
-    }
-
-    void set_scene_size(int width, int height) const {
-        if (!raw_ || !raw_->set_scene_size) {
-            return;
-        }
-        raw_->set_scene_size(width, height);
-    }
-
-    void set_scene_frame_rate(int rate, int scale) const {
-        if (!raw_ || !raw_->set_scene_frame_rate) {
-            return;
-        }
-        raw_->set_scene_frame_rate(rate, scale);
-    }
-
-    void set_scene_sample_rate(int sample_rate) const {
-        if (!raw_ || !raw_->set_scene_sample_rate) {
-            return;
-        }
-        raw_->set_scene_sample_rate(sample_rate);
-    }
-
-    void set_layer_enable(int layer, bool enable) const {
-        if (!raw_ || !raw_->set_layer_enable) {
-            return;
-        }
-        raw_->set_layer_enable(layer, enable);
-    }
-
-    void set_layer_lock(int layer, bool lock) const {
-        if (!raw_ || !raw_->set_layer_lock) {
-            return;
-        }
-        raw_->set_layer_lock(layer, lock);
-    }
-};
-
-// using EditHandle = raw::EDIT_HANDLE;
+    return ProjectFile(project);
+}
 
 }; // namespace aviutl2::edit
 
