@@ -108,12 +108,12 @@ concept ConfigTextGettable = requires(T& plugin) {
 };
 
 template <typename T>
-concept ProjectConfigLoadable = requires(T& plugin, edit::ProjectFile* project) {
+concept ProjectConfigLoadable = requires(T& plugin, edit::ProjectFile& project) {
     { plugin.load_project_config_impl(project) } -> std::convertible_to<bool>;
 };
 
 template <typename T>
-concept ProjectConfigSavable = requires(T& plugin, edit::ProjectFile* project) {
+concept ProjectConfigSavable = requires(T& plugin, edit::ProjectFile& project) {
     { plugin.save_project_config_impl(project) } -> std::convertible_to<bool>;
 };
 
@@ -227,7 +227,8 @@ template <typename Derived> class OutputPlugin : public aviutl2::Singleton<Deriv
     static bool load_project_config(raw::PROJECT_FILE* project) {
         try {
             if constexpr (ProjectConfigLoadable<Derived>) {
-                return Derived::instance().load_project_config_impl(project);
+                edit::ProjectFile wrapped{project};
+                return Derived::instance().load_project_config_impl(wrapped);
             } else {
                 return false;
             }
@@ -243,7 +244,8 @@ template <typename Derived> class OutputPlugin : public aviutl2::Singleton<Deriv
     static bool save_project_config(raw::PROJECT_FILE* project) {
         try {
             if constexpr (ProjectConfigSavable<Derived>) {
-                return Derived::instance().save_project_config_impl(project);
+                edit::ProjectFile wrapped{project};
+                return Derived::instance().save_project_config_impl(wrapped);
             } else {
                 return false;
             }

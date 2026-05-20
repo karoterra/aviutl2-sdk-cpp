@@ -31,10 +31,10 @@ class SkeletonOutputPlugin : public aviutl2::output::OutputPlugin<SkeletonOutput
     LPCWSTR get_config_text_impl() { return nullptr; }
 
     // プロジェクトファイル側から出力設定の読み込み (任意)
-    bool load_project_config_impl(aviutl2::edit::ProjectFile* project) { return false; }
+    bool load_project_config_impl(aviutl2::edit::ProjectFile& project) { return false; }
 
     // プロジェクトファイル側への出力設定の書き込み (任意)
-    bool save_project_config_impl(aviutl2::edit::ProjectFile* project) { return false; }
+    bool save_project_config_impl(aviutl2::edit::ProjectFile& project) { return false; }
 };
 
 // プラグイン初期化/解放処理の検証

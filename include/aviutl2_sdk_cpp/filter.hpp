@@ -157,7 +157,7 @@ class Button {
     raw::FILTER_ITEM_BUTTON item_;
 
   public:
-    using callback_type = void (*)(EditSection*);
+    using callback_type = void (*)(raw::EDIT_SECTION*);
 
     Button(LPCWSTR name, callback_type func) : item_(name, func) {}
 
